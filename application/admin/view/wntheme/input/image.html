@@ -1,0 +1,13 @@
+<!-- input v1.1.0 -->
+<div class="layui-form-item">
+    <label class="layui-form-label">{$option['text']}</label>
+    <div class="layui-input-inline w600">
+        <input type="text" name="param[{$option['name']}]" placeholder="圖片位址或路徑" value="{$config[$option['name']]}" class="layui-input upload-input">
+    </div>
+    <div class="layui-input-inline">
+        <button type="button" class="layui-btn layui-upload" lay-data="{data:{thumb:0,thumb_class:'param[custom_setting]'}}" id="upload1">上傳圖片</button>
+    </div>
+    {if($option['description'])}
+    <div class="layui-form-mid layui-word-aux ml10">{$option['description']}</div>
+    {/if}
+</div>

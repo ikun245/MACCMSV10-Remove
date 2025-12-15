@@ -1,0 +1,250 @@
+{include file="../../../application/admin/view/public/head" /}
+<style>
+    :root{
+        --label-width: 200px;
+    }
+    .layui-form-pane .layui-form-label{
+        width: var(--label-width);
+    }
+
+    .layui-form-pane .layui-input-block{
+        margin-left: calc(var(--label-width) + 10px);
+    }
+</style>
+<!-- theme options v2.4.0 -->
+<div class="page-container p10">
+    <div class="showpic" style="display:none;"><img class="showpic_img" width="120" height="160"></div>
+
+    <div>
+        {if(!empty(config('domain')))}<a href="{:url('domain/index')}" class="layui-btn layui-bg-dark">< 站群管理</a>{/if}
+        <button type="button" class="layui-btn layui-bg-red">網站ID: {$wid}</button>
+        <button type="button" class="layui-btn layui-bg-blue">模板ID: {$tid} ({$version})</button>
+        {if($url)}<a href="https://{$url}" target="_blank" class="layui-btn layui-bg-dark">{$url}</a>{/if}
+    </div>
+
+    <form class="layui-form layui-form-pane" action="">
+        <input type="hidden" name="__token__" value="{$Request.token}"/>
+        <div class="layui-tab" lay-filter="tb1">
+
+            <!-- Tabs -->
+            <ul class="layui-tab-title">
+                <li class="layui-this" lay-id="config_intro">欢迎使用</li>
+                {maccms:foreach name="$tabs" id="tab" key="key"}
+                    <li lay-id="config_{$key}">{$tab[name]}</li>
+                {/maccms:foreach}
+                <li lay-id="config_ads_generator">广告代码生成器</li>
+            </ul>
+
+            <!-- Content -->
+            <div class="layui-tab-content">
+                <div class="layui-tab-item layui-show">
+                    {include file="../../../application/admin/view/wntheme/intro" /}
+                </div>
+
+                <!-- 自订分页内容 -->
+                {maccms:foreach name="$tabs" id="tab_content" key="key"}
+                    <div class="layui-tab-item">
+
+                        {maccms:foreach name="$tab_content['options']" id="option" key="option_index"}
+                            {if($option[type] == 'text')}  {include file="../../../application/admin/view/wntheme/input/text" /} {/if}
+                            {if($option[type] == 'text_link')}  {include file="../../../application/admin/view/wntheme/input/text_link" /} {/if}
+                            {if($option[type] == 'textarea')}  {include file="../../../application/admin/view/wntheme/input/textarea" /} {/if}
+                            {if($option[type] == 'select')}  {include file="../../../application/admin/view/wntheme/input/select" /} {/if}
+                            {if($option[type] == 'image')}  {include file="../../../application/admin/view/wntheme/input/image" /} {/if}
+                            {if($option[type] == 'radio')}  {include file="../../../application/admin/view/wntheme/input/radio" /} {/if}
+                            {if($option[type] == 'checkbox')}  {include file="../../../application/admin/view/wntheme/input/checkbox" /} {/if}
+                            
+                            {if($option[type] == 'heading')}
+                                <h2 style='{if($option_index != 0)}margin-top: 50px;{/if} margin-bottom: 10px;font-weight: bold;background: linear-gradient(45deg, #fff398, #3d2750);padding: 5px 10px;border-radius: 3px;'>{$option['text']}</h2> 
+                            {/if}
+                            
+                            {if($option[type] == 'sub_heading')}
+                                <h3 style="{if($option_index != 0)}margin-top: 10px;{/if} margin-bottom: 10px;font-weight: bold;background: linear-gradient(45deg, #fff398, #cccbd0);padding: 5px 10px;border-radius: 3px;width: fit-content;">{$option['text']}</h3> 
+                            {/if}
+                        {/maccms:foreach}
+        
+                        <!-- Submit -->
+                        <div class="layui-form-item center" style="padding:30px 0;">
+                            <button type="submit" class="layui-btn" lay-submit="" lay-filter="formSubmit" style="width:100%;">储存设定</button>
+                        </div>
+                
+                    </div>
+                {/maccms:foreach}
+
+                <!-- 广告代码生成 -->
+                <div class="layui-tab-item">
+                    <blockquote class="layui-elem-quote layui-text" style="margin:20px 0;border-left-color: #ff5722;">
+                        <p>
+                            图片广告代码:<br>
+                            &lt;a href="目标连结" target="_blank"&gt;&lt;img src="图片连结"&gt;&lt;/a&gt;
+                        </p>
+                    </blockquote>
+
+                    <!-- 生成图片 -->
+                    <div class="layui-form-item">
+                        <label class="layui-form-label w-300px">图片地址</label>
+                        <div class="layui-input-inline">
+                            <input type="text" class="layui-input upload-input" id="code-generator-image">
+                        </div>
+                        <div class="layui-input-inline">
+                            <button type="button" class="layui-btn layui-btn-primary layui-upload"
+                                lay-data="{data:{thumb:0,thumb_class:'site['image_generator']'}}">上传图片</button><input
+                                class="layui-upload-file" type="file" name="file">
+
+                        </div>
+                        <div class="layui-form-mid layui-word-aux">上传后自己生成图片连结</div>
+                    </div>
+
+                    <!-- 生成代码 -->
+                    <div class="layui-form-item mb-3">
+                        <label class="layui-form-label w-300px">图片广告代码生成器</label>
+                        <div class="layui-input-inline mb-1">
+                            <input type="text" placeholder="输入目标连结" id="code-generator-link" class="layui-input">
+                        </div>
+                        <div class="layui-input-inline mb-1" style="margin-left:5px !important;">
+                            <input id="code-generator-new-window" class="layui-checkbox" type="checkbox" checked="">
+                            <div class="layui-unselect layui-form-checkbox layui-form-checked" lay-skin=""><i class="layui-icon"></i>
+                            </div>
+                            <div class="layui-form-mid layui-word-aux">新视窗打开</div>
+                        </div>
+                    </div>
+
+
+                    <div class="layui-form-item mb-3">
+                        <div class="layui-input-inline mb-1">
+                            <button type="button" class="layui-btn layui-btn-primary btn-code-generator">生成代码</button>
+                        </div>
+                    </div>
+
+                    <div class="layui-form-item mb-3">
+                        <textarea id="code-generator-output" class="w-100 layui-textarea" rows="5"></textarea>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </form>
+</div>
+
+{include file="../../../application/admin/view/public/foot" /}
+
+<script type="text/javascript" src="__STATIC__/js/jquery.cookie.js"></script>
+<script type="text/javascript">
+    layui.use(['form','upload', 'layer'], function(){
+        
+        // 操作物件
+        var element = layui.element
+            ,form = layui.form
+            , layer = layui.layer
+            , upload = layui.upload;
+
+        form.on('radio(cache_type)',function(data){
+            $('.row_cache_server').hide();
+           if(data.value=='memcache' || data.value=='redis' || data.value=='memcached'){
+               $('.row_cache_server').show();
+           }
+        });
+
+        //! 记录最后停留页面
+        element.on('tab(tb1)', function(){
+            $.cookie('config_tab', this.getAttribute('lay-id'));
+        });
+
+        if( $.cookie('config_tab') !=null ) {
+            element.tabChange('tb1', $.cookie('config_tab'));
+        }
+
+
+        // 上传文件
+        upload.render({
+            elem: '.layui-upload'
+            ,url: "{:url('upload/upload')}?flag=site"
+            ,method: 'post'
+            ,before: function(input) {
+                layer.msg('文件上传中...', {time:3000000});
+            },done: function(res, index, upload) {
+                var obj = this.item;
+                if (res.code == 0) {
+                    layer.msg(res.msg);
+                    return false;
+                }
+                layer.closeAll();
+                var input = $(obj).parent().parent().find('.upload-input');
+                if ($(obj).attr('lay-type') == 'image') {
+                    input.siblings('img').attr('src', res.data.file).show();
+                }
+                var filePath = '/' + res.data.file; // 在路径前面添加 '/'
+                input.val(filePath);
+
+                if(res.data.thumb_class !=''){
+                    $('.'+ res.data.thumb_class).val(res.data.thumb[0].file);
+                }
+            }
+        });
+
+        // Mouseover 显示已上传的图片
+        $('.upload-input').hover(function (e){
+            var e = window.event || e;
+            var imgsrc = $(this).val();
+            if(imgsrc.trim() === "") { return; }
+            var left = e.clientX + document.body.scrollLeft + 20;
+            var top = e.clientY + document.body.scrollTop + 20;
+            $(".showpic").css({left: left, top: top, display: ""});
+            
+            // 处理路径
+            if (imgsrc.indexOf('://') < 0) {
+                if (imgsrc.startsWith('/')) {
+                    imgsrc = imgsrc.substring(1); // 去掉多余的 '/'
+                }
+                imgsrc = ROOT_PATH + '/' + imgsrc;
+            } else {
+                imgsrc = imgsrc.replace('mac:', 'http:');
+            }
+            
+            $(".showpic_img").attr("src", imgsrc);
+        }, function () {
+            $(".showpic").css("display", "none");
+        });
+    });
+
+    function test_cache(){
+        var type = $("input[name='app[cache_type]']:checked").val();
+        var host = $("input[name='app[cache_host]']").val();
+        var port = $("input[name='app[cache_port]']").val();
+        var user_name =  $("input[name='app[cache_username]']").val();
+        var password = $("input[name='app[cache_password]']").val();
+        layer.msg('资料提交中...',{time:500000});
+        $.ajax({
+            url: "{:url('system/test_cache')}",
+            type: "post",
+            dataType: "json",
+            data: {type:type,host:host,port:port,username:user_name,password:password},
+            beforeSend: function () {
+            },
+            error:function(r){
+                layer.msg('发生错误，请检查是否开启扩展库和配置项!',{time:1800});
+            },
+            success: function (r) {
+                layer.msg(r.msg,{time:1800});
+            },
+            complete: function () {
+            }
+        });
+    }
+
+    //code generator
+    $('.btn-code-generator').on('click',function(){
+        var code_generator_link = document.getElementById('code-generator-link').value;
+        var code_generator_image = document.getElementById('code-generator-image').value;
+        var code_generator_output = document.getElementById('code-generator-output');
+        var code_generator_new_window = document.getElementById('code-generator-new-window');
+        var generated_code = "<a href='" + code_generator_link + "' " + (code_generator_new_window.checked ? "target='_blank'" : "") + "><img src='" + code_generator_image + "'></a>";
+        code_generator_output.value = generated_code;
+    })
+</script>
+
+</body>
+</html>

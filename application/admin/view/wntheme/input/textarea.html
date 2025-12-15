@@ -1,0 +1,20 @@
+<!-- input v1.1.0 -->
+<div class="layui-form-item">
+    <label class="layui-form-label">{$option['text']}</label>
+    <div class="layui-input-block">
+        {if ( isset($option['group']) ) }
+            <textarea 
+            name="param[{$option['group']}][{$option['name']}]"
+                class="layui-textarea"  
+                placeholder="{$option['placeholder']}">{$config[$option['group']][$option['name']]}</textarea>
+        {else}
+            <textarea 
+                name="param[{$option['name']}]"
+                class="layui-textarea"  
+                placeholder="{$option['placeholder']}">{$config[$option['name']]}</textarea>
+        {/if}
+        {if($option['description'])}
+        <div class="layui-form-mid layui-word-aux ml10">{$option['description']}</div>
+        {/if}
+    </div>
+</div>

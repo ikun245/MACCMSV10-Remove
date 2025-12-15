@@ -1,0 +1,23 @@
+<!-- input v1.1.0 -->
+<div class="layui-form-item">
+    <label class="layui-form-label">{$option['text']}文字</label>
+    <div class="layui-input-inline w200 mb5">
+        <input type="text" name="param[{$option['name']}_text]" value="{$config[$option['name'] . '_text']}" class="layui-input">
+    </div>
+
+    <label class="layui-form-label">{$option['text']}連結</label>
+    <div class="layui-input-inline w300 mb5">
+        <input type="text" name="param[{$option['name']}_link]" value="{$config[$option['name'] . '_link']}" class="layui-input">
+    </div>
+
+    {if($option['allow_new_window'])}
+    <div class="layui-input-inline w100 mb5">
+        <input type="hidden" lay-skin="{$option['skin']}" name="param[{$option['name']}_new_window]" value="0">
+        <input type="checkbox" lay-skin="{$option['skin']}" name="param[{$option['name']}_new_window]" value="1" title="新視窗打開" {if($config[$option['name'] . '_new_window'])} checked {/if}>
+    </div>
+    {/if}
+
+    {if($option['description'])}
+    <div class="layui-form-mid layui-word-aux">{$option['description']}</div>
+    {/if}
+</div>

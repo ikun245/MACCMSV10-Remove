@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html>
+
+    <head>
+        <title>播放器 - @haixianmian8</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=11" />
+        <meta content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no" id="viewport" name="viewport">
+        <style type="text/css">
+            html,
+            body {
+                width: 100%;
+                height: 100%;
+                padding: 0;
+                margin: 0;
+            }
+
+            #playerCnt {
+                width: 100%;
+                height: 100%;
+            }
+            #my_video{
+                width: 100%;
+                height: 100%;
+            }
+            .plyr{
+                width: 100%;
+                height: 100%;
+            }
+
+            .plyr--full-ui input[type=range] {
+                color: rgba(219,84,47,.9)!important;
+            }
+
+            .plyr__control--overlaid {
+                background: rgba(219,84,47,.8)!important;
+            }
+
+            .plyr--video .plyr__control.plyr__tab-focus,
+            .plyr--video .plyr__control:hover,
+            .plyr--video .plyr__control[aria-expanded=true] {
+                background: rgba(219,84,47,.9)!important;
+            }
+
+            .plyr__control.plyr__tab-focus {
+                box-shadow: 0 0 0 5px rgba(219,84,47,.8, .5);
+            }
+
+            .plyr__menu__container .plyr__control[role=menuitemradio][aria-checked=true]::before {
+                background: rgba(219,84,47,.9)!important;
+            }
+        </style>
+        <link rel="stylesheet" href="/static/player/plyr/plyr.css" />
+        <script type="text/javascript" src="/static/player/plyr/plyr.polyfilled.js"></script>
+        <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/plyr/3.7.8/plyr.min.js"></script> -->
+        <script src="/static/player/plyr/hls.js"></script>
+    </head>
+
+    <body marginwidth="0" marginheight="0">
+        <!-- Place the player container here -->
+        <div id="playerCnt">
+            <video id="my_video" controls crossorigin playsinline poster=""></video>
+        </div>
+        <script type="text/javascript">
+            document.addEventListener('DOMContentLoaded', (e) => {
+                var type = 'normal';
+                var live = false;
+                var video = document.querySelector('video');
+                video.muted = true;
+                var videoUrl = parent.MacPlayer.PlayUrl;
+                var vod_pic = parent.vod_pic;
+                var preroll_ads = parent.plyr_preroll_ads;
+
+                container_element_id = 'playerCnt';
+                video_element_id = 'my_video';
+
+                // console.log(preroll_ads);
+
+                let playerSettings = {
+                    controls: [
+                        'play-large',
+                        'rewind',
+                        'play',
+                        'fast-forward',
+                        'progress',
+                        'current-time',
+                        'duration',
+                        'mute',
+                        'captions',
+                        'settings',
+                        'pip',
+                        'fullscreen',
+                        document.documentElement.clientWidth >= 768 ? 'volume' : null,
+                    ],
+                    fullscreen: {
+                        enabled: true,
+                        fallback: true,
+                        iosNative: true,
+                        container: null,
+                    },
+                    speed: {
+                        selected: 1,
+                        options: [0.25, 0.5, 1, 1.25, 1.5, 2],
+                    },
+                    i18n: {
+                        qualityLabel: {
+                            0: '自動',
+                        },
+                    },
+                    thumbnail: {
+                        enabled: true,
+                        pic_num: 7499,
+                        width: 300,
+                        height: 168,
+                        col: 6,
+                        row: 6,
+                        offsetX: 0,
+                        offsetY: 0,
+                    },
+                    keyboard: {
+                        focused: true,
+                        global: true,
+                    },
+                };
+
+                var player = new Plyr( "#" + video_element_id, playerSettings);
+                var posterElement = document.querySelector(".plyr__poster");
+               
+                posterElement.style.backgroundColor = "transparent";
+                posterElement.style.opacity = "1";
+                posterElement.style.backgroundImage = "url('" + vod_pic + "')";
+                posterElement.style.backgroundSize = "cover";
+
+                if(preroll_ads){
+                    wn_play_video(videoUrl)
+                    // wn_play_ads(preroll_ads, videoUrl);
+                }else{
+                    wn_play_video(videoUrl)
+                }
+
+                function wn_play_video(video_url, auto_play = false)
+                {
+                    if (video_url.indexOf('.m3u8') > -1) {
+                        if(Hls.isSupported()) {
+                            hls = new Hls();
+                            hls.loadSource(video_url);
+                            hls.attachMedia(video);
+
+                        }else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+                            video.src = video_url;
+                        }
+
+                    } else if (video_url.indexOf('.mp4') > -1) {
+                        // MP4 video
+                        var source = {
+                            type: 'video',
+                            sources: [
+                                {
+                                    src: video_url,
+                                    type: 'video/mp4',
+                                },
+                            ],
+                        };
+                        player.source = source;
+                        
+                    }
+
+                    player.on('play', function () {
+                        posterElement.style.opacity = "0"; // Set opacity to 1
+                    });
+                    
+                    if(auto_play){
+    
+                        //auto play video here
+                        player.play();
+                    }
+                }
+ 
+                function wn_play_ads(preroll_ads, video_url)
+                {
+                    player.toggleControls(false)
+                    wn_play_video(preroll_ads);
+                    player.on('ended', function () {
+                        player.toggleControls(true)
+                        player.source = null;
+                        wn_play_video(video_url, true);
+                    });
+                }
+
+            });
+
+        </script>
+    </body>
+
+</html>

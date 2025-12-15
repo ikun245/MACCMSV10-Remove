@@ -1,0 +1,12 @@
+<!-- input v1.1.0 -->
+<div class="layui-form-item">
+    <label class="layui-form-label">{$option['text']}</label>
+    <div class="layui-input-inline w600">
+        {maccms:foreach name="$option[choices]" id="choice_name" key="choice_value"}
+        <input type="radio" name="param[{$option['name']}]" value="{$choice_value}" title="{$choice_name}" {if( $config[$option['name']] == $choice_value )} checked {/if}>
+        {/maccms:foreach}
+    </div>
+    {if($option['description'])}
+    <div class="layui-form-mid layui-word-aux ml10">{$option['description']}</div>
+    {/if}
+</div>
